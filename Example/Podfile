@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'Promisor_Example' do
+  pod 'Promisor', :path => '../'
+
+  target 'Promisor_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
