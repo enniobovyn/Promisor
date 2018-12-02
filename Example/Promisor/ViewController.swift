@@ -2,8 +2,8 @@
 //  ViewController.swift
 //  Promisor
 //
-//  Created by enniobovyn on 12/02/2018.
-//  Copyright (c) 2018 enniobovyn. All rights reserved.
+//  Created by Ennio Bovyn on 12/02/2018.
+//  Copyright (c) 2018 Ennio Bovyn. All rights reserved.
 //
 
 import UIKit

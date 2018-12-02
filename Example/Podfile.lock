@@ -1,0 +1,16 @@
+PODS:
+  - Promisor (0.1.0)
+
+DEPENDENCIES:
+  - Promisor (from `../`)
+
+EXTERNAL SOURCES:
+  Promisor:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Promisor: ee8df566e8ca8ec365bccd1332064b76f614f6c2
+
+PODFILE CHECKSUM: dfb2074d81389dc3fc3e04051767ef2bbad9fdd5
+
+COCOAPODS: 1.5.3

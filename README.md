@@ -22,7 +22,7 @@ pod 'Promisor'
 
 ## Author
 
-enniobovyn, enniobovyn@gmail.com
+Ennio Bovyn, enniobovyn@gmail.com
 
 ## License
 

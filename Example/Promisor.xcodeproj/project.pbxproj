@@ -29,8 +29,8 @@
 
 /* Begin PBXFileReference section */
 		09216922979ED3DAC28AB109 /* Pods-Promisor_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Promisor_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Promisor_Example/Pods-Promisor_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		09B2C37E4E8BCF85738C83CC /* Promisor.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = Promisor.podspec; path = ../Promisor.podspec; sourceTree = "<group>"; };
-		265B61A3D79D5A35ECCAD96F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		09B2C37E4E8BCF85738C83CC /* Promisor.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Promisor.podspec; path = ../Promisor.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		265B61A3D79D5A35ECCAD96F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4FFB0064D30BB5885AA7EB8A /* Pods_Promisor_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Promisor_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B3C0DB704793119A1D8E78B /* Pods-Promisor_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Promisor_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Promisor_Tests/Pods-Promisor_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* Promisor_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Promisor_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,7 +43,7 @@
 		607FACE51AFB9204008FA782 /* Promisor_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Promisor_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		9EF7EABE472B05CC93713749 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		9EF7EABE472B05CC93713749 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		AB0EF26BB6BFD1084D7A83BB /* Pods-Promisor_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Promisor_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Promisor_Tests/Pods-Promisor_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		AFA95B3AAEE8E2437B408D24 /* Pods-Promisor_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Promisor_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Promisor_Example/Pods-Promisor_Example.release.xcconfig"; sourceTree = "<group>"; };
 		D0DA43E104AE511DF0B6AE5D /* Pods_Promisor_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Promisor_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
