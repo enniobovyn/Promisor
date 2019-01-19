@@ -60,38 +60,27 @@ public final class Promise<Value> {
     
     @discardableResult
     public func then(_ onFulfilled: @escaping FulfillHandler, _ onRejected: @escaping RejectHandler = { _ in }) -> Self {
-        
-        // If the promise has already been fulfilled or rejected when a corresponding handler is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
-        switch state {
-        case .fulfilled(let value):
-            onFulfilled(value)
-        case .rejected(let reason):
-            onRejected(reason)
-        default:
-            fulfillmentHandlers.append(onFulfilled)
-            rejectionHandlers.append(onRejected)
-        }
-        
+        addOrExecuteHandlers(
+            fulfillmentHandler: onFulfilled,
+            rejectionHandler: onRejected
+        )
         return self
     }
     
     @discardableResult
     public func then<NewValue>(_ onFulfilled: @escaping (Value) -> Promise<NewValue>) -> Promise<NewValue> {
-        
         return Promise<NewValue> { resolve, reject in
-            
-            fulfillmentHandlers.append({ value in
-                onFulfilled(value).then(resolve, reject)
-            })
-            
-            rejectionHandlers.append(reject)
-            
+            addOrExecuteHandlers(
+                fulfillmentHandler: { value in
+                    onFulfilled(value).then(resolve, reject)
+                },
+                rejectionHandler: reject
+            )
         }
     }
     
     @discardableResult
     public func then<NewValue>(_ onFulfilled: @escaping (Value) -> NewValue) -> Promise<NewValue> {
-        
         return then({ value -> Promise<NewValue> in
             return Promise<NewValue>(value: onFulfilled(value))
         })
@@ -99,13 +88,11 @@ public final class Promise<Value> {
     
     @discardableResult
     public func `catch`(_ onRejected: @escaping RejectHandler) -> Self {
-        
         return then({ _ in }, onRejected)
     }
     
     @discardableResult
     public func finally(_ onFinally: @escaping () -> ()) -> Self {
-        
         return then({ _ in
             onFinally()
         }, { _ in
@@ -128,21 +115,30 @@ public final class Promise<Value> {
     }
     
     private func handleFulfillment(with value: Value) {
-        
         for handler in fulfillmentHandlers {
             handler(value)
         }
-        
         fulfillmentHandlers.removeAll()
     }
     
     private func handleRejection(with reason: Error) {
-        
         for handler in rejectionHandlers {
             handler(reason)
         }
-        
         rejectionHandlers.removeAll()
+    }
+    
+    private func addOrExecuteHandlers(fulfillmentHandler: @escaping FulfillHandler, rejectionHandler: @escaping RejectHandler) {
+        // If the promise has already been fulfilled or rejected when a corresponding handler is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
+        switch state {
+        case .fulfilled(let value):
+            fulfillmentHandler(value)
+        case .rejected(let reason):
+            rejectionHandler(reason)
+        default:
+            fulfillmentHandlers.append(fulfillmentHandler)
+            rejectionHandlers.append(rejectionHandler)
+        }
     }
     
 }
