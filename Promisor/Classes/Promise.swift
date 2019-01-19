@@ -5,25 +5,6 @@
 //  Created by Ennio Bovyn on 25/11/2018.
 //
 
-enum PromiseState<Value> {
-    
-    /// Initial state, neither fulfilled nor rejected.
-    case pending
-    
-    /// Meaning that the operation completed successfully.
-    case fulfilled(value: Value)
-    
-    /// Meaning that the operation failed.
-    case rejected(reason: Error)
-    
-    var value: Value? {
-        if case .fulfilled(let value) = self {
-            return value
-        }
-        return nil
-    }
-}
-
 public final class Promise<Value> {
     
     public typealias FulfillHandler = (Value) -> ()
