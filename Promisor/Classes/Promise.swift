@@ -10,8 +10,20 @@ public final class Promise<Value> {
     public typealias FulfillHandler = (Value) -> ()
     public typealias RejectHandler = (Error) -> ()
     
-    private(set) var state: PromiseState<Value> = .pending
+    private(set) var state: PromiseState<Value> {
+        get {
+            return lockQueue.sync { _state }
+        }
+        set {
+            lockQueue.async(flags: .barrier) {
+                self._state = newValue
+            }
+        }
+    }
     
+    private let lockQueue = DispatchQueue(label: "promise-lock_queue", attributes: .concurrent)
+    
+    private var _state: PromiseState<Value> = .pending
     private var fulfillmentHandlers = [FulfillHandler]()
     private var rejectionHandlers = [RejectHandler]()
     
@@ -96,17 +108,25 @@ public final class Promise<Value> {
     }
     
     private func handleFulfillment(with value: Value) {
-        for handler in fulfillmentHandlers {
-            handler(value)
+        lockQueue.sync {
+            for handler in fulfillmentHandlers {
+                handler(value)
+            }
         }
-        fulfillmentHandlers.removeAll()
+        lockQueue.async(flags: .barrier) {
+            self.fulfillmentHandlers.removeAll()
+        }
     }
     
     private func handleRejection(with reason: Error) {
-        for handler in rejectionHandlers {
-            handler(reason)
+        lockQueue.sync {
+            for handler in rejectionHandlers {
+                handler(reason)
+            }
         }
-        rejectionHandlers.removeAll()
+        lockQueue.async(flags: .barrier) {
+            self.rejectionHandlers.removeAll()
+        }
     }
     
     private func addOrExecuteHandlers(fulfillmentHandler: @escaping FulfillHandler, rejectionHandler: @escaping RejectHandler) {
@@ -117,8 +137,10 @@ public final class Promise<Value> {
         case .rejected(let reason):
             rejectionHandler(reason)
         default:
-            fulfillmentHandlers.append(fulfillmentHandler)
-            rejectionHandlers.append(rejectionHandler)
+            lockQueue.async(flags: .barrier) {
+                self.fulfillmentHandlers.append(fulfillmentHandler)
+                self.rejectionHandlers.append(rejectionHandler)
+            }
         }
     }
     
