@@ -10,7 +10,14 @@ public final class Promise<Value> {
     public typealias FulfillHandler = (Value) -> ()
     public typealias RejectHandler = (Error) -> ()
     
-    private(set) var state: PromiseState<Value> {
+    private let lockQueue = DispatchQueue(label: "promise-lock_queue", attributes: .concurrent)
+    
+    private var fulfillmentHandlers = [FulfillHandler]()
+    private var rejectionHandlers = [RejectHandler]()
+    
+    private var _state: State<Value> = .pending
+    
+    private(set) var state: State<Value> {
         get {
             return lockQueue.sync { _state }
         }
@@ -20,12 +27,6 @@ public final class Promise<Value> {
             }
         }
     }
-    
-    private let lockQueue = DispatchQueue(label: "promise-lock_queue", attributes: .concurrent)
-    
-    private var _state: PromiseState<Value> = .pending
-    private var fulfillmentHandlers = [FulfillHandler]()
-    private var rejectionHandlers = [RejectHandler]()
     
     /**
      Initializes a new Promise.
