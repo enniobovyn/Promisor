@@ -16,7 +16,7 @@
 		86C43797305DEF87823AF81035138A27 /* Promisor-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E057D858F6809DFD1D737AEBE14A7 /* Promisor-dummy.m */; };
 		CF3B5DD31307A26E4CF31A415C35CEEA /* Pods-Promisor_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2743CC2A8B74A06E8E5C0A06CF984473 /* Pods-Promisor_Example-dummy.m */; };
 		E50BF32921F3BFB70092459A /* Promise+TypeMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */; };
-		E50BF32B21F3CB9D0092459A /* PromiseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50BF32A21F3CB9D0092459A /* PromiseState.swift */; };
+		E50BF32B21F3CB9D0092459A /* Promise+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50BF32A21F3CB9D0092459A /* Promise+State.swift */; };
 		FC2A6D42AD3A381BBB34EE2BDCCA9B3C /* Pods-Promisor_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D862C72AEF30A79E582F7C2EA38101FA /* Pods-Promisor_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FE9B2011271BB23F7981FF351BA3CE99 /* Pods-Promisor_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD344E87DAE6A5C4CFD1437B6BDB4BE /* Pods-Promisor_Tests-dummy.m */; };
 /* End PBXBuildFile section */
@@ -69,7 +69,7 @@
 		DFE987EB4206A83A69C5BB9CEBF15E84 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E36C12578F073AB02F98CC8D93D7ED3B /* Pods-Promisor_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Promisor_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+TypeMethods.swift"; path = "Promisor/Classes/Promise+TypeMethods.swift"; sourceTree = "<group>"; };
-		E50BF32A21F3CB9D0092459A /* PromiseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PromiseState.swift; path = Promisor/Classes/PromiseState.swift; sourceTree = "<group>"; };
+		E50BF32A21F3CB9D0092459A /* Promise+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+State.swift"; path = "Promisor/Classes/Promise+State.swift"; sourceTree = "<group>"; };
 		E9CD21F884A740436797C26DFE95DA7A /* Promisor.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Promisor.xcconfig; sourceTree = "<group>"; };
 		EB9C51EE7B5A93F939C898EDDD7985A1 /* Pods-Promisor_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Promisor_Example.modulemap"; sourceTree = "<group>"; };
 		F1D81F939E07A2CC1698F238E7BEBE74 /* Promisor.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Promisor.modulemap; sourceTree = "<group>"; };
@@ -223,8 +223,8 @@
 		F90FB3BB11A2DDF44F79E642DFDC9993 /* Promisor */ = {
 			isa = PBXGroup;
 			children = (
-				E50BF32A21F3CB9D0092459A /* PromiseState.swift */,
 				D25C49AA44B34449D1453171B8CFE84B /* Promise.swift */,
+				E50BF32A21F3CB9D0092459A /* Promise+State.swift */,
 				E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */,
 				5978C071D30A87AAA310CF269329C336 /* Pod */,
 				8CB8CB785D1E7FB3B42D2BD3CAD44961 /* Support Files */,
@@ -385,7 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5137AA59F7DA556617470A2ECD4EBC92 /* Promise.swift in Sources */,
-				E50BF32B21F3CB9D0092459A /* PromiseState.swift in Sources */,
+				E50BF32B21F3CB9D0092459A /* Promise+State.swift in Sources */,
 				86C43797305DEF87823AF81035138A27 /* Promisor-dummy.m in Sources */,
 				E50BF32921F3BFB70092459A /* Promise+TypeMethods.swift in Sources */,
 			);
