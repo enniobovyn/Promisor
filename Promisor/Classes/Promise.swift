@@ -75,14 +75,33 @@ public final class Promise<Value> {
     
     @discardableResult
     public func then<NewValue>(_ onFulfilled: @escaping (Value) -> NewValue) -> Promise<NewValue> {
-        return then({ value -> Promise<NewValue> in
+        return then { value -> Promise<NewValue> in
             return Promise<NewValue>(value: onFulfilled(value))
-        })
+        }
     }
     
     @discardableResult
     public func `catch`(_ onRejected: @escaping RejectHandler) -> Self {
         return then({ _ in }, onRejected)
+    }
+    
+    @discardableResult
+    public func `catch`<NewValue>(_ onRejected: @escaping (Error) -> Promise<NewValue>) -> Promise<NewValue> {
+        return Promise<NewValue> { resolve, reject in
+            addOrExecuteHandlers(
+                fulfillmentHandler: { _ in },
+                rejectionHandler: { reason in
+                    onRejected(reason).then(resolve, reject)
+                }
+            )
+        }
+    }
+    
+    @discardableResult
+    public func `catch`<NewValue>(_ onRejected: @escaping (Error) -> NewValue) -> Promise<NewValue> {
+        return self.catch { reason in
+            return Promise<NewValue>(value: onRejected(reason))
+        }
     }
     
     @discardableResult
