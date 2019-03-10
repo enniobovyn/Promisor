@@ -35,9 +35,13 @@ public final class Promise<Value> {
      - Parameter resolve: A function that resolves the promise when called.
      - Parameter reject: A function that rejects the promise when called.
      */
-    public convenience init(_ executor: (_ resolve: @escaping FulfillHandler, _ reject: @escaping RejectHandler) -> ()) {
+    public convenience init(_ executor: (_ resolve: @escaping FulfillHandler, _ reject: @escaping RejectHandler) throws -> ()) {
         self.init()
-        executor(self.resolve, self.reject)
+        do {
+            try executor(self.resolve, self.reject)
+        } catch {
+            self.reject(error)
+        }
     }
     
     private init() {
@@ -62,11 +66,15 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func then<NewValue>(_ onFulfilled: @escaping (Value) -> Promise<NewValue>) -> Promise<NewValue> {
+    public func then<NewValue>(_ onFulfilled: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
         return Promise<NewValue> { resolve, reject in
             addOrExecuteHandlers(
                 fulfillmentHandler: { value in
-                    onFulfilled(value).then(resolve, reject)
+                    do {
+                        try onFulfilled(value).then(resolve, reject)
+                    } catch {
+                        reject(error)
+                    }
                 },
                 rejectionHandler: reject
             )
@@ -74,9 +82,13 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func then<NewValue>(_ onFulfilled: @escaping (Value) -> NewValue) -> Promise<NewValue> {
+    public func then<NewValue>(_ onFulfilled: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
         return then { value -> Promise<NewValue> in
-            return Promise<NewValue>(value: onFulfilled(value))
+            do {
+                return Promise<NewValue>(value: try onFulfilled(value))
+            } catch {
+                return Promise<NewValue>(reason: error)
+            }
         }
     }
     
@@ -86,21 +98,29 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func `catch`<NewValue>(_ onRejected: @escaping (Error) -> Promise<NewValue>) -> Promise<NewValue> {
+    public func `catch`<NewValue>(_ onRejected: @escaping (Error) throws -> Promise<NewValue>) -> Promise<NewValue> {
         return Promise<NewValue> { resolve, reject in
             addOrExecuteHandlers(
                 fulfillmentHandler: { _ in },
                 rejectionHandler: { reason in
-                    onRejected(reason).then(resolve, reject)
+                    do {
+                        try onRejected(reason).then(resolve, reject)
+                    } catch {
+                        reject(error)
+                    }
                 }
             )
         }
     }
     
     @discardableResult
-    public func `catch`<NewValue>(_ onRejected: @escaping (Error) -> NewValue) -> Promise<NewValue> {
+    public func `catch`<NewValue>(_ onRejected: @escaping (Error) throws -> NewValue) -> Promise<NewValue> {
         return self.catch { reason in
-            return Promise<NewValue>(value: onRejected(reason))
+            do {
+                return Promise<NewValue>(value: try onRejected(reason))
+            } catch {
+                return Promise<NewValue>(reason: error)
+            }
         }
     }
     
