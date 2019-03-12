@@ -10,22 +10,11 @@ public final class Promise<Value> {
     public typealias FulfillHandler = (Value) -> ()
     public typealias RejectHandler = (Error) -> ()
     
-    private let lockQueue = DispatchQueue(label: "promise-lock_queue", attributes: .concurrent)
+    private(set) var state: State<Value> = .pending
+    
+    private let lockQueue = DispatchQueue(label: "promise-lock_queue")
     
     private var settlementHandlers = [SettlementHandler]()
-    
-    private var _state: State<Value> = .pending
-    
-    private(set) var state: State<Value> {
-        get {
-            return lockQueue.sync { _state }
-        }
-        set {
-            lockQueue.async(flags: .barrier) {
-                self._state = newValue
-            }
-        }
-    }
     
     /**
      Initializes a new Promise.
@@ -131,42 +120,44 @@ public final class Promise<Value> {
     }
     
     private func resolve(_ value: Value) {
-        guard case .pending = state else { return }
-        
-        state = .fulfilled(value: value)
-        handleSettlement()
+        lockQueue.async {
+            guard case .pending = self.state else { return }
+            
+            self.state = .fulfilled(value: value)
+            self.handleSettlement(with: self.settlementHandlers)
+        }
     }
     
     private func reject(_ reason: Error) {
-        guard case .pending = state else { return }
-        
-        state = .rejected(reason: reason)
-        handleSettlement()
+        lockQueue.async {
+            guard case .pending = self.state else { return }
+            
+            self.state = .rejected(reason: reason)
+            self.handleSettlement(with: self.settlementHandlers)
+        }
     }
     
-    private func handleSettlement() {
-        lockQueue.sync {
-            for handler in settlementHandlers {
-                handler.execute(for: state)
+    private func handleSettlement(with handlers: [SettlementHandler]) {
+        guard !handlers.isEmpty else { return }
+        
+        lockQueue.async {
+            var mutableHandlers = handlers
+            let handler = mutableHandlers.removeFirst()
+            handler.execute(for: self.state) {
+                self.handleSettlement(with: mutableHandlers)
             }
-        }
-        lockQueue.async(flags: .barrier) {
-            self.settlementHandlers.removeAll()
         }
     }
     
     private func addOrExecuteHandlers(queue: DispatchQueue, fulfillmentHandler: @escaping FulfillHandler, rejectionHandler: @escaping RejectHandler) {
-        // If the promise has already been fulfilled or rejected when a corresponding handler is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
-        switch state {
-        case .fulfilled(let value):
-            queue.async { fulfillmentHandler(value) }
-        case .rejected(let reason):
-            queue.async { rejectionHandler(reason) }
-        default:
-            lockQueue.async(flags: .barrier) {
-                let handler = SettlementHandler(queue: queue, fulfillmentHandler: fulfillmentHandler, rejectionHandler: rejectionHandler)
-                self.settlementHandlers.append(handler)
+        let handler = SettlementHandler(queue: queue, fulfillmentHandler: fulfillmentHandler, rejectionHandler: rejectionHandler)
+        lockQueue.async(flags: .barrier) {
+            // If the promise has already been fulfilled or rejected when a corresponding handler is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
+            if self.state.isSettled {
+                handler.execute(for: self.state)
+                return
             }
+            self.settlementHandlers.append(handler)
         }
     }
     
