@@ -13,17 +13,20 @@ extension Promise {
         let fulfillmentHandler: Promise.FulfillHandler
         let rejectionHandler: Promise.RejectHandler
         
-        func execute(for state: Promise.State<Value>) {
-            var workItem: DispatchWorkItem
+        func execute(for state: Promise.State<Value>, completionHandler: (() -> ())? = nil) {
             switch state {
             case .fulfilled(let value):
-                workItem = DispatchWorkItem { self.fulfillmentHandler(value) }
+                queue.async {
+                    self.fulfillmentHandler(value)
+                    completionHandler?()
+                }
             case .rejected(let reason):
-                workItem = DispatchWorkItem { self.rejectionHandler(reason) }
+                queue.async {
+                    self.rejectionHandler(reason)
+                    completionHandler?()
+                }
             default: return
             }
-            queue.async(execute: workItem)
-            workItem.wait()
         }
         
     }
