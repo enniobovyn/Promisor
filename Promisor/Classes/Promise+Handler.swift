@@ -7,11 +7,14 @@
 
 extension Promise {
     
+    public typealias FulfillmentHandler = (Value) -> ()
+    public typealias RejectionHandler = (Error) -> ()
+    
     struct SettlementHandler {
         
         let queue: DispatchQueue
-        let fulfillmentHandler: Promise.FulfillHandler
-        let rejectionHandler: Promise.RejectHandler
+        let fulfillmentHandler: FulfillmentHandler
+        let rejectionHandler: RejectionHandler
         
         func execute(for state: Promise.State<Value>, completionHandler: (() -> ())? = nil) {
             switch state {

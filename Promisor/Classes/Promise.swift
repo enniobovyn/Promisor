@@ -7,9 +7,6 @@
 
 public final class Promise<Value> {
     
-    public typealias FulfillHandler = (Value) -> ()
-    public typealias RejectHandler = (Error) -> ()
-    
     private(set) var state: State<Value> = .pending
     
     private let lockQueue = DispatchQueue(label: "promise-lock_queue")
@@ -23,7 +20,7 @@ public final class Promise<Value> {
      - Parameter resolve: A function that resolves the promise when called.
      - Parameter reject: A function that rejects the promise when called.
      */
-    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping (_ resolve: @escaping FulfillHandler, _ reject: @escaping RejectHandler) throws -> ()) {
+    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping (_ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()) {
         self.init()
         queue.async {
             do {
@@ -47,7 +44,7 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func then(on queue: DispatchQueue = .main, _ onFulfilled: @escaping FulfillHandler, _ onRejected: @escaping RejectHandler = { _ in }) -> Self {
+    public func then(on queue: DispatchQueue = .main, _ onFulfilled: @escaping FulfillmentHandler, _ onRejected: @escaping RejectionHandler = { _ in }) -> Self {
         addOrExecuteHandlers(queue: queue, fulfillmentHandler: onFulfilled, rejectionHandler: onRejected)
         return self
     }
@@ -81,7 +78,7 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func `catch`(on queue: DispatchQueue = .main, _ onRejected: @escaping RejectHandler) -> Self {
+    public func `catch`(on queue: DispatchQueue = .main, _ onRejected: @escaping RejectionHandler) -> Self {
         return then(on: queue, { _ in }, onRejected)
     }
     
@@ -149,7 +146,7 @@ public final class Promise<Value> {
         }
     }
     
-    private func addOrExecuteHandlers(queue: DispatchQueue, fulfillmentHandler: @escaping FulfillHandler, rejectionHandler: @escaping RejectHandler) {
+    private func addOrExecuteHandlers(queue: DispatchQueue, fulfillmentHandler: @escaping FulfillmentHandler, rejectionHandler: @escaping RejectionHandler) {
         let handler = SettlementHandler(queue: queue, fulfillmentHandler: fulfillmentHandler, rejectionHandler: rejectionHandler)
         lockQueue.async(flags: .barrier) {
             // If the promise has already been fulfilled or rejected when a corresponding handler is attached, the handler will be called, so there is no race condition between an asynchronous operation completing and its handlers being attached.
