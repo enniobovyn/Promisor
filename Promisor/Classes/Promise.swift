@@ -83,11 +83,11 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func `catch`<NewValue>(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> Promise<NewValue>) -> Promise<NewValue> {
-        return Promise<NewValue> { resolve, reject in
+    public func recover(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> Promise) -> Promise {
+        return Promise { resolve, reject in
             self.addOrExecuteHandlers(
                 queue: queue,
-                fulfillmentHandler: { _ in },
+                fulfillmentHandler: resolve,
                 rejectionHandler: { reason in
                     do {
                         try onRejected(reason).then(on: queue, resolve, reject)
@@ -100,12 +100,12 @@ public final class Promise<Value> {
     }
     
     @discardableResult
-    public func `catch`<NewValue>(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> NewValue) -> Promise<NewValue> {
-        return self.catch(on: queue) { reason in
+    public func recover(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> Value) -> Promise {
+        return recover(on: queue) { reason -> Promise in
             do {
-                return Promise<NewValue>(value: try onRejected(reason))
+                return Promise(value: try onRejected(reason))
             } catch {
-                return Promise<NewValue>(reason: error)
+                return Promise(reason: error)
             }
         }
     }
