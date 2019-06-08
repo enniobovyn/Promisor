@@ -7,9 +7,13 @@
 
 public final class Promise<Value> {
     
+    public typealias Executor = (_ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()
+    public typealias ExtendedExecutor = (_ config: Configuration, _ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()
+    
     private(set) var state: State<Value> = .pending
     
     private let lockQueue = DispatchQueue(label: "promise-lock_queue")
+    private let configuration = Configuration()
     
     private var settlementHandlers = [SettlementHandler]()
     
@@ -20,11 +24,22 @@ public final class Promise<Value> {
      - Parameter resolve: A function that resolves the promise when called.
      - Parameter reject: A function that rejects the promise when called.
      */
-    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping (_ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()) {
+    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping Executor) {
         self.init()
         queue.async {
             do {
                 try executor(self.resolve, self.reject)
+            } catch {
+                self.reject(error)
+            }
+        }
+    }
+    
+    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping ExtendedExecutor) {
+        self.init()
+        queue.async {
+            do {
+                try executor(self.configuration, self.resolve, self.reject)
             } catch {
                 self.reject(error)
             }
