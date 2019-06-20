@@ -20,8 +20,10 @@ public extension Promise {
     }
     
     public static func all(_ promises: [Promise<Value>]) -> Promise<[Value]> {
-        return Promise<[Value]> { resolve, reject in
+        return Promise<[Value]> { config, resolve, reject in
             guard !promises.isEmpty else { resolve([]); return }
+            
+            var cancelHandlers = [() -> ()]()
 
             for promise in promises {
                 promise
@@ -31,14 +33,32 @@ public extension Promise {
                         }
                     }
                     .catch { reject($0) }
+                
+                cancelHandlers.append { [weak promise] in
+                    promise?.cancel()
+                }
+            }
+            
+            config.onCancel = {
+                cancelHandlers.forEach { $0() }
             }
         }
     }
     
     public static func race(_ promises: [Promise<Value>]) -> Promise<Value> {
-        return Promise<Value> { resolve, reject in
+        return Promise<Value> { config, resolve, reject in
+            var cancelHandlers = [() -> ()]()
+            
             for promise in promises {
                 promise.then(resolve, reject)
+                
+                cancelHandlers.append { [weak promise] in
+                    promise?.cancel()
+                }
+            }
+            
+            config.onCancel = {
+                cancelHandlers.forEach { $0() }
             }
         }
     }
