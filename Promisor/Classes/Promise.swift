@@ -84,13 +84,13 @@ public final class Promise<Value> {
     
     @discardableResult
     public func then<NewValue>(on queue: DispatchQueue = .main, _ onFulfilled: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
-        let promise = Promise<NewValue> { [weak self] resolve, reject in
-            self?.addOrExecuteHandlers(
+        let promise = Promise<NewValue> { resolve, reject in
+            self.addOrExecuteHandlers(
                 queue: queue,
                 fulfillmentHandler: { value in
                     do {
                         let p = try onFulfilled(value)
-                        p.cancelContext = self?.cancelContext
+                        p.cancelContext = self.cancelContext
                         p.then(on: queue, resolve, reject)
                     } catch {
                         reject(error)
@@ -121,14 +121,14 @@ public final class Promise<Value> {
     
     @discardableResult
     public func recover(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> Promise) -> Promise {
-        let promise = Promise { [weak self] resolve, reject in
-            self?.addOrExecuteHandlers(
+        let promise = Promise { resolve, reject in
+            self.addOrExecuteHandlers(
                 queue: queue,
                 fulfillmentHandler: resolve,
                 rejectionHandler: { reason in
                     do {
                         let p = try onRejected(reason)
-                        p.cancelContext = self?.cancelContext
+                        p.cancelContext = self.cancelContext
                         p.then(on: queue, resolve, reject)
                     } catch {
                         reject(error)
