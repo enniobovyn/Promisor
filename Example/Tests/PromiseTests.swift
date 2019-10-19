@@ -25,27 +25,40 @@ class PromiseTests: XCTestCase {
     
     func testExecutorExecution() {
         let exp = expectation(description: "Execute the executor function immediately")
-        _ = Promise<Int> { _, _ in
-            exp.fulfill()
-        }
+        _ = Promise<Int> { _, _ in exp.fulfill() }
         waitForExpectations(timeout: 0.1, handler: nil)
     }
     
     func testThen() {
         let exp = expectation(description: "Execute then handler after fulfillment")
-        Promise<String> { resolve, _ in
+        Promise<()> { resolve, _ in
             DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                resolve("Success")
+                resolve(())
             }
         }
+        .then({ exp.fulfill() })
+        .catch { _ in XCTFail("Failed to execute the right handler") }
+        waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testThenReturningNewValue() {
+        let exp = expectation(description: "Execute then handlers after fulfillment")
+        Promise<()> { resolve, _ in
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                resolve(())
+            }
+        }
+        .then { return "Success" }
         .then { value in
             XCTAssertEqual(value, "Success")
             exp.fulfill()
         }
-        .catch { _ in
-            XCTFail("Failed to execute the right handler")
-        }
+        .catch { _ in XCTFail("Failed to execute the right handler") }
         waitForExpectations(timeout: 2, handler: nil)
+    }
+    
+    func testThenReturningPromise() {
+        
     }
     
     func testCatch() {
@@ -55,16 +68,32 @@ class PromiseTests: XCTestCase {
                 reject(TestError())
             }
         }
-        .then { _ in
-            XCTFail("Failed to execute the right handler")
-        }
-        .catch { error in
-            exp.fulfill()
-        }
+        .then { _ in XCTFail("Failed to execute the right handler") }
+        .catch { _ in exp.fulfill() }
         waitForExpectations(timeout: 2, handler: nil)
     }
     
     func testFinally() {
+        let exp1 = expectation(description: "Execute finally handler after fulfillment")
+        Promise<()> { resolve, _ in
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                resolve(())
+            }
+        }
+        .finally { exp1.fulfill() }
+        
+        let exp2 = expectation(description: "Execute finally handler after rejection")
+        Promise<()> { _, reject in
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                reject(TestError())
+            }
+        }
+        .finally { exp2.fulfill() }
+        
+        waitForExpectations(timeout: 4, handler: nil)
+    }
+    
+    func testResolveTypeMethod() {
         
     }
 
