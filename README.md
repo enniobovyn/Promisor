@@ -173,11 +173,11 @@ doSomething()
     .catch(handleFailure)
 ```
 
-#### Chaining after a catch
+#### Chaining after a failure
 
-It's possible to chain after a failure, i.e. a `catch`, which is useful to accomplish new actions even after an action failed in the chain. Read the following example:
+It's possible to chain after a failure, with `recover`, which is useful to accomplish new actions even after an action failed in the chain. Read the following example:
 ```swift
-Promise<()> { resolve, reject in
+Promise<Void> { resolve, reject in
     print("Initial")
 
     resolve(())
@@ -187,7 +187,7 @@ Promise<()> { resolve, reject in
 
     print("Do this")
 }
-.catch { _ in
+.recover { _ -> Promise<Void> in
     print("Do that")
 
     return doThatOnFailure()
