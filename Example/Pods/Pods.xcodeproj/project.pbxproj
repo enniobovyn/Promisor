@@ -18,6 +18,8 @@
 		E50BF32921F3BFB70092459A /* Promise+TypeMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */; };
 		E50BF32B21F3CB9D0092459A /* Promise+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50BF32A21F3CB9D0092459A /* Promise+State.swift */; };
 		E56118592235C32700E02BF2 /* Promise+Handler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56118582235C32700E02BF2 /* Promise+Handler.swift */; };
+		E5FF5B5822AC209700DFD60C /* Promise+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FF5B5722AC209700DFD60C /* Promise+Configuration.swift */; };
+		E5FF5B5D22AEB72500DFD60C /* Promise+Cancel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FF5B5C22AEB72500DFD60C /* Promise+Cancel.swift */; };
 		FC2A6D42AD3A381BBB34EE2BDCCA9B3C /* Pods-Promisor_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D862C72AEF30A79E582F7C2EA38101FA /* Pods-Promisor_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FE9B2011271BB23F7981FF351BA3CE99 /* Pods-Promisor_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD344E87DAE6A5C4CFD1437B6BDB4BE /* Pods-Promisor_Tests-dummy.m */; };
 /* End PBXBuildFile section */
@@ -72,6 +74,8 @@
 		E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+TypeMethods.swift"; path = "Promisor/Classes/Promise+TypeMethods.swift"; sourceTree = "<group>"; };
 		E50BF32A21F3CB9D0092459A /* Promise+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+State.swift"; path = "Promisor/Classes/Promise+State.swift"; sourceTree = "<group>"; };
 		E56118582235C32700E02BF2 /* Promise+Handler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+Handler.swift"; path = "Promisor/Classes/Promise+Handler.swift"; sourceTree = "<group>"; };
+		E5FF5B5722AC209700DFD60C /* Promise+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+Configuration.swift"; path = "Promisor/Classes/Promise+Configuration.swift"; sourceTree = "<group>"; };
+		E5FF5B5C22AEB72500DFD60C /* Promise+Cancel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Promise+Cancel.swift"; path = "Promisor/Classes/Promise+Cancel.swift"; sourceTree = "<group>"; };
 		E9CD21F884A740436797C26DFE95DA7A /* Promisor.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Promisor.xcconfig; sourceTree = "<group>"; };
 		EB9C51EE7B5A93F939C898EDDD7985A1 /* Pods-Promisor_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Promisor_Example.modulemap"; sourceTree = "<group>"; };
 		F1D81F939E07A2CC1698F238E7BEBE74 /* Promisor.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Promisor.modulemap; sourceTree = "<group>"; };
@@ -229,6 +233,8 @@
 				E50BF32A21F3CB9D0092459A /* Promise+State.swift */,
 				E56118582235C32700E02BF2 /* Promise+Handler.swift */,
 				E50BF32821F3BFB70092459A /* Promise+TypeMethods.swift */,
+				E5FF5B5722AC209700DFD60C /* Promise+Configuration.swift */,
+				E5FF5B5C22AEB72500DFD60C /* Promise+Cancel.swift */,
 				5978C071D30A87AAA310CF269329C336 /* Pod */,
 				8CB8CB785D1E7FB3B42D2BD3CAD44961 /* Support Files */,
 			);
@@ -336,6 +342,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
@@ -391,6 +398,8 @@
 				E50BF32B21F3CB9D0092459A /* Promise+State.swift in Sources */,
 				86C43797305DEF87823AF81035138A27 /* Promisor-dummy.m in Sources */,
 				E56118592235C32700E02BF2 /* Promise+Handler.swift in Sources */,
+				E5FF5B5D22AEB72500DFD60C /* Promise+Cancel.swift in Sources */,
+				E5FF5B5822AC209700DFD60C /* Promise+Configuration.swift in Sources */,
 				E50BF32921F3BFB70092459A /* Promise+TypeMethods.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -5,11 +5,30 @@
 //  Created by Ennio Bovyn on 25/11/2018.
 //
 
+public enum PromiseError: Error {
+    case cancelled
+}
+
 public final class Promise<Value> {
+    
+    public typealias Executor = (_ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()
+    public typealias ExtendedExecutor = (_ config: Configuration, _ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()
+    
+    public internal(set) var cancelContext: CancelContext? {
+        didSet {
+            cancelContext?.onCancel { [weak self] in
+                guard let self = self, self.state.isPending else { return }
+                
+                self.reject(PromiseError.cancelled)
+                self.configuration.onCancel?()
+            }
+        }
+    }
     
     private(set) var state: State<Value> = .pending
     
     private let lockQueue = DispatchQueue(label: "promise-lock_queue")
+    private let configuration = Configuration()
     
     private var settlementHandlers = [SettlementHandler]()
     
@@ -20,7 +39,7 @@ public final class Promise<Value> {
      - Parameter resolve: A function that resolves the promise when called.
      - Parameter reject: A function that rejects the promise when called.
      */
-    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping (_ resolve: @escaping FulfillmentHandler, _ reject: @escaping RejectionHandler) throws -> ()) {
+    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping Executor) {
         self.init()
         queue.async {
             do {
@@ -31,8 +50,22 @@ public final class Promise<Value> {
         }
     }
     
+    public convenience init(on queue: DispatchQueue = .global(qos: .background), _ executor: @escaping ExtendedExecutor) {
+        self.init()
+        queue.async {
+            do {
+                try executor(self.configuration, self.resolve, self.reject)
+            } catch {
+                self.reject(error)
+            }
+        }
+    }
+    
     private init() {
         state = .pending
+        defer {
+            cancelContext = CancelContext()
+        }
     }
     
     private init(value: Value) {
@@ -51,12 +84,14 @@ public final class Promise<Value> {
     
     @discardableResult
     public func then<NewValue>(on queue: DispatchQueue = .main, _ onFulfilled: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
-        return Promise<NewValue> { resolve, reject in
+        let promise = Promise<NewValue> { resolve, reject in
             self.addOrExecuteHandlers(
                 queue: queue,
                 fulfillmentHandler: { value in
                     do {
-                        try onFulfilled(value).then(on: queue, resolve, reject)
+                        let p = try onFulfilled(value)
+                        p.cancelContext = self.cancelContext
+                        p.then(on: queue, resolve, reject)
                     } catch {
                         reject(error)
                     }
@@ -64,6 +99,8 @@ public final class Promise<Value> {
                 rejectionHandler: reject
             )
         }
+        promise.cancelContext = cancelContext
+        return promise
     }
     
     @discardableResult
@@ -84,19 +121,23 @@ public final class Promise<Value> {
     
     @discardableResult
     public func recover(on queue: DispatchQueue = .main, _ onRejected: @escaping (Error) throws -> Promise) -> Promise {
-        return Promise { resolve, reject in
+        let promise = Promise { resolve, reject in
             self.addOrExecuteHandlers(
                 queue: queue,
                 fulfillmentHandler: resolve,
                 rejectionHandler: { reason in
                     do {
-                        try onRejected(reason).then(on: queue, resolve, reject)
+                        let p = try onRejected(reason)
+                        p.cancelContext = self.cancelContext
+                        p.then(on: queue, resolve, reject)
                     } catch {
                         reject(error)
                     }
                 }
             )
         }
+        promise.cancelContext = cancelContext
+        return promise
     }
     
     @discardableResult
@@ -112,8 +153,7 @@ public final class Promise<Value> {
     
     @discardableResult
     public func finally(on queue: DispatchQueue = .main, _ onFinally: @escaping () -> ()) -> Self {
-        return then(on: queue, { _ in onFinally() }, { _ in onFinally() }
-        )
+        return then(on: queue, { _ in onFinally() }, { _ in onFinally() })
     }
     
     private func resolve(_ value: Value) {
